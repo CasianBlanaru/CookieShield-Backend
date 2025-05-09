@@ -1,107 +1,114 @@
-# Cookie Consent Server (Laravel)
+# CookieShield Backend
 
-Ein Laravel-basierter API-Server für das Cookie-Consent-System. Dieser Server bietet Endpunkte zum Abrufen von Konfigurationen und zum Speichern von Consent-Entscheidungen.
+A Laravel-based API server for the CookieShield consent management system. This server provides endpoints for retrieving configurations and storing consent decisions.
 
-## Funktionen
+## Motivation
 
-- REST-API für Cookie-Consent-Konfigurationen
-- Speichern und Abrufen von Consent-Entscheidungen
-- Administrationsschnittstelle für die Verwaltung von Konfigurationen
-- Multi-Language-Unterstützung
-- JSON-basierte Konfiguration für flexible Anpassungen
+CookieShield was developed to create a 100% GDPR (DSGVO) and BITV compliant cookie consent solution that is completely free to use. Our goal is to provide a robust tool that allows website owners to meet legal requirements while maintaining full control over the design and functionality of their cookie banners. Privacy compliance should be accessible to everyone, not just those who can afford premium solutions.
 
-## Voraussetzungen
+## Features
+
+- 100% GDPR (DSGVO) and BITV compliant consent management
+- Free to use with all features included - no premium tiers
+- REST API for cookie consent configurations
+- Store and retrieve consent decisions with proper documentation
+- Administrative interface for managing configurations
+- Multi-language support for international websites
+- JSON-based configuration for flexible customization
+- Complete design freedom through the dashboard
+
+## Requirements
 
 - PHP 8.1+
 - Composer
-- MySQL, PostgreSQL oder SQLite
+- MySQL, PostgreSQL, or SQLite
 
 ## Installation
 
-1. Repository klonen
-2. Abhängigkeiten installieren:
+1. Clone the repository
+2. Install dependencies:
 
 ```bash
 composer install
 ```
 
-3. `.env`-Datei konfigurieren (aus `.env.example` kopieren):
+3. Configure the `.env` file (copy from `.env.example`):
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-4. Datenbank-Verbindung in der `.env`-Datei konfigurieren:
+4. Configure database connection in the `.env` file:
 
 ```
 DB_CONNECTION=sqlite
-DB_DATABASE=/absoluter/pfad/zur/database/database.sqlite
+DB_DATABASE=/absolute/path/to/database/database.sqlite
 ```
 
-Oder für MySQL:
+Or for MySQL:
 
 ```
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=cookie_consent
+DB_DATABASE=cookieshield
 DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-5. Datenbank-Migrationen ausführen:
+5. Run database migrations:
 
 ```bash
 php artisan migrate
 ```
 
-6. Seed-Daten einspielen:
+6. Seed the database:
 
 ```bash
 php artisan db:seed
 ```
 
-## Server starten
+## Starting the Server
 
-Entwicklungsserver starten:
+Start the development server:
 
 ```bash
 php artisan serve
 ```
 
-Der Server ist dann unter `http://localhost:8000` erreichbar.
+The server will be accessible at `http://localhost:8000`.
 
-## API-Endpunkte
+## API Endpoints
 
-### Konfiguration
+### Configuration
 
-- `GET /api/prod/config.json?apiKey=test-api-key&v=1.0.0`: Konfiguration abrufen
-- `POST /api/prod/config`: Konfiguration speichern
+- `GET /api/prod/config.json?apiKey=your-api-key&v=1.0.0`: Retrieve configuration
+- `POST /api/prod/config`: Save configuration
 
 ### Consent
 
-- `POST /api/prod/consent`: Consent-Entscheidung speichern
-- `GET /api/prod/consent/{visitorId}?apiKey=test-api-key`: Consent für einen Besucher abrufen
-- `DELETE /api/prod/consent/{visitorId}?apiKey=test-api-key`: Consent für einen Besucher löschen
+- `POST /api/prod/consent`: Store consent decision
+- `GET /api/prod/consent/{visitorId}?apiKey=your-api-key`: Retrieve consent for a visitor
+- `DELETE /api/prod/consent/{visitorId}?apiKey=your-api-key`: Delete consent for a visitor
 
-### Admin-Bereich
+### Admin Area
 
-- `GET /api/admin/configs`: Alle Konfigurationen auflisten
-- `GET /api/admin/configs/{id}`: Eine bestimmte Konfiguration anzeigen
-- `PUT /api/admin/configs/{id}`: Eine Konfiguration aktualisieren
-- `DELETE /api/admin/configs/{id}`: Eine Konfiguration löschen
-- `GET /api/admin/consents`: Alle Consents auflisten
-- `GET /api/admin/consents/{id}`: Einen bestimmten Consent anzeigen
-- `GET /api/admin/consents/api-key/{apiKey}`: Consents für einen API-Key auflisten
+- `GET /api/admin/configs`: List all configurations
+- `GET /api/admin/configs/{id}`: Show a specific configuration
+- `PUT /api/admin/configs/{id}`: Update a configuration
+- `DELETE /api/admin/configs/{id}`: Delete a configuration
+- `GET /api/admin/consents`: List all consents
+- `GET /api/admin/consents/{id}`: Show a specific consent
+- `GET /api/admin/consents/api-key/{apiKey}`: List consents for an API key
 
-## Integration mit dem Cookie-Consent-Client
+## Integration with the CookieShield Dashboard
 
-Im Client (`config-example.js`) die API-Endpunkte anpassen:
+In the client (`config-example.js`), adjust the API endpoints:
 
 ```javascript
 window.__COOKIE_BANNER_SETTINGS__ = {
-  apiKey: 'test-api-key',
+  apiKey: 'your-api-key',
   // ...
   apiEndpoints: {
     config: 'http://localhost:8000/api/prod',
@@ -111,11 +118,22 @@ window.__COOKIE_BANNER_SETTINGS__ = {
 };
 ```
 
-## Produktionsumgebung
+## Production Environment
 
-Für die Produktionsumgebung empfehlen wir:
+For production environments, we recommend:
 
-1. Einen echten Webserver (Nginx, Apache) einzurichten
-2. SSL/TLS zu konfigurieren
-3. Rate-Limiting und Caching einzurichten
-4. Die Admin-Routen mit einer Authentifizierung zu schützen
+1. Setting up a proper web server (Nginx, Apache)
+2. Configuring SSL/TLS
+3. Setting up rate limiting and caching
+4. Protecting admin routes with authentication
+
+## Developer
+
+Developed by Casian Blanaru at PixelCoda.
+
+- Email: casian@casianus.com
+- Company: PixelCoda
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
