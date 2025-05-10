@@ -77,3 +77,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/cookie-settings', [CookieSettingController::class, 'show']);
     Route::post('/cookie-settings', [CookieSettingController::class, 'update']);
 });
+
+// Test-Route
+Route::get('/test', function () {
+    return response()->json(['message' => 'API funktioniert!']);
+});
