@@ -24,7 +24,15 @@ class CorsMiddleware
         }
         
         // Set CORS headers
-        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:8080', 'https://cookie-shield.vercel.app'];
+        $origin = $request->header('Origin');
+        
+        if (in_array($origin, $allowedOrigins)) {
+            $response->headers->set('Access-Control-Allow-Origin', $origin);
+        } else {
+            $response->headers->set('Access-Control-Allow-Origin', '');
+        }
+        
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-XSRF-TOKEN');
         $response->headers->set('Access-Control-Allow-Credentials', 'true');
