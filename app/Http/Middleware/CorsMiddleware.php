@@ -24,14 +24,28 @@ class CorsMiddleware
         }
         
         // Set CORS headers
-        $allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:8080', 'https://cookie-shield.vercel.app'];
+        $allowedOrigins = [
+            'http://localhost:3000', 
+            'http://localhost:3001', 
+            'http://localhost:8080', 
+            'https://cookie-shield.vercel.app',
+            'https://cookie-shield-7lauglqq1-casianus-projects-f4ba8bd9.vercel.app'
+        ];
         $origin = $request->header('Origin');
         
-        if (in_array($origin, $allowedOrigins)) {
+        // Überprüfen, ob die Herkunft in der Liste der erlaubten Quellen ist
+        // oder dem Muster einer Vercel-Preview-Domain entspricht
+        $isAllowed = in_array($origin, $allowedOrigins) || 
+                     (strpos($origin, 'https://cookie-shield') === 0 && 
+                      strpos($origin, '.vercel.app') !== false);
+        
+        if ($isAllowed) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
         } else {
-            $response->headers->set('Access-Control-Allow-Origin', '');
+            // Wenn der Ursprung nicht erlaubt ist, setzen wir trotzdem einen Wert, 
+            // um ein "Missing Allow Origin Header"-Problem zu vermeiden
+            $response->headers->set('Access-Control-Allow-Origin', '*');
             $response->headers->set('Access-Control-Allow-Credentials', 'false');
         }
         

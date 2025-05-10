@@ -24,9 +24,13 @@ return [
         'http://localhost:3001',
         'http://localhost:8080', 
         'https://cookie-shield.vercel.app',
+        'https://cookie-shield-7lauglqq1-casianus-projects-f4ba8bd9.vercel.app',
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        // Pattern für alle Vercel-Preview-Domains
+        '#^https://cookie-shield.*\.vercel\.app$#',
+    ],
 
     'allowed_headers' => ['*'],
 

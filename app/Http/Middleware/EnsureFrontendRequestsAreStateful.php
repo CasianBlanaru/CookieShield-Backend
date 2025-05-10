@@ -23,12 +23,18 @@ class EnsureFrontendRequestsAreStateful extends Middleware
 
         $referer = $request->headers->get('referer');
 
-        $frontendUrl = 'cookie-shield.vercel.app';
+        // Überprüfen auf bekannte Frontend-Domains
+        $frontendUrls = [
+            'cookie-shield.vercel.app',
+            'cookie-shield-7lauglqq1-casianus-projects-f4ba8bd9.vercel.app'
+        ];
         
         $host = parse_url($referer, PHP_URL_HOST) ?: '';
 
-        return Str::contains($host, $frontendUrl) || 
+        // Entweder eine bekannte Domain oder ein Muster einer Vercel-Preview-Domain
+        return in_array($host, $frontendUrls) || 
                Str::contains($host, 'localhost') || 
-               Str::contains($host, '127.0.0.1');
+               Str::contains($host, '127.0.0.1') ||
+               (Str::contains($host, 'cookie-shield') && Str::contains($host, 'vercel.app'));
     }
 } 
