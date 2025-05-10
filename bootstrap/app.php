@@ -12,20 +12,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withProviders([
+        \App\Providers\AppServiceProvider::class,
         \App\Providers\RouteServiceProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
         // Globale Middleware für alle Anfragen
         $middleware->append(\App\Http\Middleware\CorsMiddleware::class);
         
+        // API-Middleware ohne EnsureFrontendRequestsAreStateful
         $middleware->api(append: [
-            \App\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
         
         $middleware->alias([
-            'auth.sanctum' => \App\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            'auth.sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
         
         $middleware->web(append: [
@@ -37,7 +38,14 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
         
+        // API-Gruppe (für einzelne Routen)
         $middleware->group('api', [
+            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
+
+        // Stateful API-Gruppe (für Routen, die Session benötigen)
+        $middleware->group('stateful.api', [
             \App\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,

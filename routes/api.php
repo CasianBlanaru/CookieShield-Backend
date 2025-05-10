@@ -18,10 +18,6 @@ use App\Http\Controllers\Api\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // Direkte Routen für lokale Entwicklung
 Route::get('/config', [ConfigController::class, 'getConfig']);
 Route::post('/consent', [ConsentController::class, 'storeConsent']);
@@ -64,7 +60,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/consents/api-key/{apiKey}', [ConsentController::class, 'getConsentsByApiKey']);
 });
 
-// Cookie Dashboard API Routes
+// Cookie Dashboard API Routes - ohne Middleware für öffentlichen Zugriff
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -73,9 +69,12 @@ Route::get('/csrf-token', function (Request $request) {
     return response()->json(['token' => csrf_token()]);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/cookie-settings', [CookieSettingController::class, 'show']);
-    Route::post('/cookie-settings', [CookieSettingController::class, 'update']);
+// Für Routen, die sowohl Authentifizierung als auch Session-Zustand benötigen
+Route::middleware('stateful.api')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/cookie-settings', [CookieSettingController::class, 'show']);
+        Route::post('/cookie-settings', [CookieSettingController::class, 'update']);
+    });
 });
 
 // Test-Route

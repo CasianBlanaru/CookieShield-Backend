@@ -15,6 +15,11 @@ class EnsureFrontendRequestsAreStateful extends Middleware
      */
     protected static function frontendRequest($request)
     {
+        // Bei API-Routen als stateful behandeln
+        if (Str::startsWith($request->path(), 'api/')) {
+            return true;
+        }
+
         // Falls die "Referer"-Kopfzeile fehlt (was der Grund für den 419-Fehler sein könnte),
         // behandeln wir die Anfrage trotzdem als Frontend-Anfrage
         if (!$request->headers->has('referer')) {
