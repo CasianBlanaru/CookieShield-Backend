@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withProviders([
+        \App\Providers\RouteServiceProvider::class,
+    ])
     ->withMiddleware(function (Middleware $middleware) {
         // Globale Middleware für alle Anfragen
         $middleware->append(\App\Http\Middleware\CorsMiddleware::class);
