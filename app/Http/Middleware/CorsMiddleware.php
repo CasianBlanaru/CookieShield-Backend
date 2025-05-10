@@ -29,13 +29,14 @@ class CorsMiddleware
         
         if (in_array($origin, $allowedOrigins)) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
         } else {
             $response->headers->set('Access-Control-Allow-Origin', '');
+            $response->headers->set('Access-Control-Allow-Credentials', 'false');
         }
         
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-XSRF-TOKEN');
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        $response->headers->set('Access-Control-Allow-Headers', 'X-CSRF-TOKEN, Content-Type, Authorization, X-Requested-With, X-XSRF-TOKEN, Accept');
         $response->headers->set('Access-Control-Max-Age', '86400'); // 24 hours
         
         return $response;
