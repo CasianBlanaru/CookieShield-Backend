@@ -29,7 +29,8 @@ class CorsMiddleware
             'http://localhost:3001', 
             'http://localhost:8080', 
             'https://cookie-shield.vercel.app',
-            'https://cookie-shield-7lauglqq1-casianus-projects-f4ba8bd9.vercel.app'
+            'https://cookie-shield-7lauglqq1-casianus-projects-f4ba8bd9.vercel.app',
+            'https://cookie-shield-3lzvtex0u-casianus-projects-f4ba8bd9.vercel.app'
         ];
         $origin = $request->header('Origin');
         
@@ -37,7 +38,8 @@ class CorsMiddleware
         // oder dem Muster einer Vercel-Preview-Domain entspricht
         $isAllowed = in_array($origin, $allowedOrigins) || 
                      (strpos($origin, 'https://cookie-shield') === 0 && 
-                      strpos($origin, '.vercel.app') !== false);
+                      strpos($origin, '.vercel.app') !== false) ||
+                     (strpos($origin, 'http://localhost') === 0);
         
         if ($isAllowed) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
@@ -49,8 +51,8 @@ class CorsMiddleware
             $response->headers->set('Access-Control-Allow-Credentials', 'false');
         }
         
-        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'X-CSRF-TOKEN, Content-Type, Authorization, X-Requested-With, X-XSRF-TOKEN, Accept');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'X-CSRF-TOKEN, Content-Type, Authorization, X-Requested-With, X-XSRF-TOKEN, Accept, Origin');
         $response->headers->set('Access-Control-Max-Age', '86400'); // 24 hours
         
         return $response;

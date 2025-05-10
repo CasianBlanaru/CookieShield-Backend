@@ -81,3 +81,30 @@ Route::middleware('stateful.api')->group(function () {
 Route::get('/test', function () {
     return response()->json(['message' => 'API funktioniert!']);
 });
+
+// Proxy-Route für Frontend-Anfragen
+Route::match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], 'proxy/{path}', function (Request $request, $path) {
+    // Bei OPTIONS-Anfragen direkt mit 200 OK antworten
+    if ($request->isMethod('OPTIONS')) {
+        return response()->json(['status' => 'ok'], 200);
+    }
+    
+    $method = $request->method();
+    $targetPath = $path;
+    
+    // Protokoll der proxierten Anfrage
+    \Log::info("Proxy request: $method $targetPath", [
+        'headers' => $request->headers->all(),
+        'params' => $request->all()
+    ]);
+    
+    // Die Anfrage an den Controller weiterleiten
+    if (strtolower($targetPath) === 'register' && $method === 'POST') {
+        return app()->call('\App\Http\Controllers\Api\AuthController@register', ['request' => $request]);
+    } elseif (strtolower($targetPath) === 'login' && $method === 'POST') {
+        return app()->call('\App\Http\Controllers\Api\AuthController@login', ['request' => $request]);
+    }
+    
+    // Für andere Routen
+    return response()->json(['error' => 'Route not found'], 404);
+})->where('path', '.*');
