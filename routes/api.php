@@ -66,6 +66,7 @@ Route::prefix('admin')->group(function () {
 
 // Cookie Dashboard API Routes
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/cookie-settings', [CookieSettingController::class, 'show']);
     Route::post('/cookie-settings', [CookieSettingController::class, 'update']);
