@@ -83,6 +83,38 @@ Route::get('/test', function () {
 });
 
 // Proxy-Route für Frontend-Anfragen
+Route::match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], 'proxy/api/{path}', function (Request $request, $path) {
+    // Bei OPTIONS-Anfragen direkt mit 200 OK antworten
+    if ($request->isMethod('OPTIONS')) {
+        return response()->json(['status' => 'ok'], 200);
+    }
+    
+    $method = $request->method();
+    
+    // Protokoll der proxierten Anfrage
+    \Log::info("Proxy request: $method api/$path", [
+        'headers' => $request->headers->all(),
+        'params' => $request->all()
+    ]);
+    
+    // Die Anfrage an den Controller weiterleiten
+    if (strtolower($path) === 'register' && $method === 'POST') {
+        return app()->call('\App\Http\Controllers\Api\AuthController@register', ['request' => $request]);
+    } elseif (strtolower($path) === 'login' && $method === 'POST') {
+        return app()->call('\App\Http\Controllers\Api\AuthController@login', ['request' => $request]);
+    } elseif (strtolower($path) === 'cookie-settings') {
+        if ($method === 'GET') {
+            return app()->call('\App\Http\Controllers\Api\CookieSettingController@show', ['request' => $request]);
+        } elseif ($method === 'POST') {
+            return app()->call('\App\Http\Controllers\Api\CookieSettingController@update', ['request' => $request]);
+        }
+    }
+    
+    // Für andere Routen
+    return response()->json(['error' => 'Route not found: ' . $path], 404);
+})->where('path', '.*');
+
+// Allgemeine Proxy-Route für andere Pfade
 Route::match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], 'proxy/{path}', function (Request $request, $path) {
     // Bei OPTIONS-Anfragen direkt mit 200 OK antworten
     if ($request->isMethod('OPTIONS')) {
@@ -90,21 +122,34 @@ Route::match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], 'proxy/{path}
     }
     
     $method = $request->method();
-    $targetPath = $path;
     
     // Protokoll der proxierten Anfrage
-    \Log::info("Proxy request: $method $targetPath", [
+    \Log::info("General proxy request: $method $path", [
         'headers' => $request->headers->all(),
         'params' => $request->all()
     ]);
     
-    // Die Anfrage an den Controller weiterleiten
-    if (strtolower($targetPath) === 'register' && $method === 'POST') {
-        return app()->call('\App\Http\Controllers\Api\AuthController@register', ['request' => $request]);
-    } elseif (strtolower($targetPath) === 'login' && $method === 'POST') {
-        return app()->call('\App\Http\Controllers\Api\AuthController@login', ['request' => $request]);
+    // Versuchen, die Anfrage an den entsprechenden Controller weiterzuleiten
+    try {
+        if (strpos($path, 'api/') === 0) {
+            $actualPath = substr($path, 4); // Entfernen von 'api/'
+            
+            if (strtolower($actualPath) === 'register' && $method === 'POST') {
+                return app()->call('\App\Http\Controllers\Api\AuthController@register', ['request' => $request]);
+            } elseif (strtolower($actualPath) === 'login' && $method === 'POST') {
+                return app()->call('\App\Http\Controllers\Api\AuthController@login', ['request' => $request]);
+            } elseif (strtolower($actualPath) === 'cookie-settings') {
+                if ($method === 'GET') {
+                    return app()->call('\App\Http\Controllers\Api\CookieSettingController@show', ['request' => $request]);
+                } elseif ($method === 'POST') {
+                    return app()->call('\App\Http\Controllers\Api\CookieSettingController@update', ['request' => $request]);
+                }
+            }
+        }
+        
+        // Für andere Routen
+        return response()->json(['error' => 'Route not found: ' . $path], 404);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error processing request', 'message' => $e->getMessage()], 500);
     }
-    
-    // Für andere Routen
-    return response()->json(['error' => 'Route not found'], 404);
 })->where('path', '.*');
