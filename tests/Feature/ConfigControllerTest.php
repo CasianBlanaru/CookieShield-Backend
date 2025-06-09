@@ -102,7 +102,7 @@ class ConfigControllerTest extends TestCase
         ];
 
         $response = $this->postJson('/api/config', $payload);
-        
+
         $response->assertStatus(200); // Assert 200 for update
         $response->assertJsonPath('data.version', '1.0.1');
         $response->assertJsonPath('data.consent_type', 'opt-out');
@@ -127,13 +127,13 @@ class ConfigControllerTest extends TestCase
 
         // Assuming admin routes are prefixed with /api/admin/ (standard practice)
         // If not, this route needs adjustment.
-        $response = $this->getJson('/api/admin/configs'); 
+        $response = $this->getJson('/api/admin/configs');
 
         $response->assertStatus(200);
         $response->assertJsonCount(3, 'data'); // Assumes ConfigResource::collection returns data under 'data' key
         $response->assertJsonStructure(['data' => ['*' => $this->getDefaultConfigDataStructure()]]);
     }
-    
+
     public function test_admin_can_show_config()
     {
         $adminUser = User::factory()->create(['is_admin' => true]);
@@ -155,7 +155,7 @@ class ConfigControllerTest extends TestCase
         $config = Config::factory()->create();
 
         $updatePayload = [
-            'version' => '2.0.0', 
+            'version' => '2.0.0',
             'consent_lifetime' => 30,
             // Include other fields from ConfigResource to ensure full update payload is valid
             'consent_type' => $config->consent_type,
@@ -167,7 +167,7 @@ class ConfigControllerTest extends TestCase
             'scripts' => $config->scripts,
             'bulk_consent' => $config->bulk_consent,
         ];
-        
+
         // Assuming the route for admin update is /api/admin/configs/{id}
         $response = $this->putJson("/api/admin/configs/{$config->id}", $updatePayload);
 
@@ -176,7 +176,7 @@ class ConfigControllerTest extends TestCase
         $response->assertJsonPath('data.consent_lifetime', 30);
         $this->assertDatabaseHas('configs', ['id' => $config->id, 'version' => '2.0.0', 'consent_lifetime' => 30]);
     }
-    
+
     public function test_admin_delete_config_success()
     {
         $adminUser = User::factory()->create(['is_admin' => true]);

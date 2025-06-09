@@ -130,7 +130,7 @@ class ConfigController extends Controller
         $config->categories = $validatedData['categories'] ?? $config->categories;
         $config->scripts = $validatedData['scripts'] ?? $config->scripts;
         $config->translations = $validatedData['translations'] ?? $config->translations;
-        
+
         $config->save();
         return new ConfigResource($config); // Use ConfigResource
     }

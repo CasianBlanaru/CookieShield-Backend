@@ -55,7 +55,7 @@ class ConfigService
             // though for default data it's generally safer.
             $config->fill(Arr::except($defaultData, ['api_key']));
             // Ensure version is set, defaulting if $version is null
-            $config->version = $defaultData['version']; 
+            $config->version = $defaultData['version'];
             $needsSave = true;
         } elseif ($version && $config->version !== $version) {
             $config->version = $version;
