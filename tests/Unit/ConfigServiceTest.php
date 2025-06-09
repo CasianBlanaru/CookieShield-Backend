@@ -82,13 +82,13 @@ class ConfigServiceTest extends TestCase
             'categories' => $defaultData['categories'],
             'translations' => $defaultData['translations'],
         ]);
-        
+
         // Allow a small window for timestamp comparison if needed, though direct check is better
         $originalUpdatedAt = $existingConfig->updated_at;
         Carbon::setTestNow(Carbon::now()->addSeconds(5)); // Advance time slightly to ensure updated_at would change if saved
 
         $config = $this->configService->findOrCreateConfig($apiKey, $version);
-        
+
         Carbon::setTestNow(); // Reset Carbon's test time
 
         $this->assertInstanceOf(Config::class, $config);
